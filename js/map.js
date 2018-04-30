@@ -121,13 +121,7 @@ var START = function () {
   }
 };
 
-setupOpen.addEventListener('mousemove', function (event) {
-  var PINX = 35;
-  var PINY = 75;
-  setupOpen.style.left = (event.pageX - 355 - PINX) + 'px';
-  setupOpen.style.top = (event.pageY - PINY) + 'px';
-  var userAddress = document.getElementById('address');
-  userAddress.setAttribute('value', (event.pageX - 355) + ' : ' + event.pageY);
-});
 
+var userAddress = document.getElementById('address');
+userAddress.setAttribute('readonly', 'readonly');
 setupOpen.addEventListener('mouseup', START);
