@@ -1,10 +1,18 @@
 'use strict';
-var userDialog = document.querySelector('.map');
-userDialog.classList.remove('map--faded');
+
+var notice = document.querySelectorAll('.notice fieldset');
+var disabled = function (act) {
+  for (var i = 0; i < notice.length; i++) {
+    if (act) {
+      notice[i].setAttribute('disabled', 'disabled');
+    }
+    notice[i].removeAttribute('disabled', 'disabled');
+  }
+};
+disabled(true);
 
 var similarListElement = document.querySelector('.map__pins');
 var similarOfferTemplate = document.querySelector('template').content;
-
 var TITLE = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
 var TYPE = ['palace', 'flat', 'house', 'bungalo'];
 var TYPERUS = ['Дворец', 'Квартира', 'Дом', 'Бунгало'];
@@ -53,12 +61,24 @@ var createElement = function () {
 var renderOffer = function (offers) {
   offers = createElement();
   var offerElement = similarOfferTemplate.cloneNode(true);
+  var mapPin = offerElement.querySelector('.map__pin');
+  var mapCard = offerElement.querySelector('.popup');
+  var closeCard = offerElement.querySelector('.popup__close');
+  var popupPhoto = offerElement.querySelector('.popup__photo');
+  mapCard.classList.add('hidden');
+  mapPin.classList.add('hidden');
 
-  offerElement.querySelector('.popup').style.left = offers.location.x + 'px';
-  offerElement.querySelector('.popup').style.top = offers.location.y + 'px';
+  var toggleHidden = function () {
+    mapCard.classList.toggle('hidden');
+  };
 
-  offerElement.querySelector('.map__pin').style.left = (offers.location.x - 25) + 'px';
-  offerElement.querySelector('.map__pin').style.top = (offers.location.y - 70) + 'px';
+  mapPin.addEventListener('click', toggleHidden);
+  closeCard.addEventListener('click', toggleHidden);
+
+  mapCard.style.left = offers.location.x + 'px';
+  mapCard.style.top = offers.location.y + 'px';
+  mapPin.style.left = (offers.location.x - 25) + 'px';
+  mapPin.style.top = (offers.location.y - 70) + 'px';
   offerElement.querySelector('.map__pin img').src = offers.author.avatar + '.png';
   offerElement.querySelector('.popup__title').textContent = offers.offer.title;
   offerElement.querySelector('.popup__text--address').textContent = offers.offer.address;
@@ -73,14 +93,17 @@ var renderOffer = function (offers) {
     offerElement.querySelector('.popup__feature').remove();
   }
 
-  offerElement.querySelector('.popup__photo').src = offers.offer.photos[0];
+  popupPhoto.src = offers.offer.photos[0];
   for (var i = 1; i < PHOTOS.length; i++) {
-    var photoElement = offerElement.querySelector('.popup__photo').cloneNode(false);
-    offerElement.querySelector('.popup__photo').src = offers.offer.photos[i];
+    var photoElement = popupPhoto.cloneNode(false);
+    popupPhoto.src = offers.offer.photos[i];
     offerElement.querySelector('.popup__photos').appendChild(photoElement);
   }
   return offerElement;
 };
+
+var setup = document.querySelector('.map');
+var setupOpen = document.querySelector('.map__pin--main');
 
 var offerAdv = [];
 var fragment = document.createDocumentFragment();
@@ -88,3 +111,23 @@ for (var i = 0; i < 8; i++) {
   fragment.appendChild(renderOffer(offerAdv[i]));
 }
 similarListElement.appendChild(fragment);
+
+var START = function () {
+  var mapPins = document.querySelectorAll('.map__pin');
+  setup.classList.remove('map--faded');
+  disabled(false);
+  for (var j = 0; j < mapPins.length; j++) {
+    mapPins[j].classList.remove('hidden');
+  }
+};
+
+setupOpen.addEventListener('mousemove', function (event) {
+  var PINX = 35;
+  var PINY = 75;
+  setupOpen.style.left = (event.pageX - 355 - PINX) + 'px';
+  setupOpen.style.top = (event.pageY - PINY) + 'px';
+  var userAddress = document.getElementById('address');
+  userAddress.setAttribute('value', (event.pageX - 355) + ' : ' + event.pageY);
+});
+
+setupOpen.addEventListener('mouseup', START);
