@@ -33,21 +33,25 @@ var compareRandom = function () {
   return Math.random() - 0.5;
 };
 
+var getRandomValue = function (min, max) {
+  return Math.round(min + Math.random() * max);
+};
+
 var createElement = function () {
   var author = {
     avatar: 'img/avatars/user0' + transformArray(NUMBER, true)
   };
   var location = {
-    x: Math.round(300 + Math.random() * 600),
-    y: Math.round(150 + Math.random() * 350)
+    x: getRandomValue(300, 600),
+    y: getRandomValue(150, 350)
   };
   var offer = {
     title: transformArray(TITLE, true),
     address: location.x + ', ' + location.y,
-    price: Math.round(1000 + Math.random() * 999000),
+    price: getRandomValue(1000, 999000),
     type: transformArray(TYPE, false, true),
-    rooms: Math.round(1 + Math.random() * 5),
-    guests: Math.round(1 + Math.random() * 10),
+    rooms: getRandomValue(1, 5),
+    guests: getRandomValue(1, 10),
     checkin: transformArray(CHECK),
     checkout: transformArray(CHECK),
     features: FEATURES,
@@ -118,6 +122,7 @@ var documentFragment = function () {
 
 var START = function () {
   var setup = document.querySelector('.map');
+  document.querySelector('.ad-form').classList.remove('ad-form--disabled');
   var mapPins = document.querySelectorAll('.map__pin');
   setup.classList.remove('map--faded');
   disabledNotice(false);
