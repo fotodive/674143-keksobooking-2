@@ -5,8 +5,9 @@ var disabledNotice = function (inactive) {
   for (var i = 0; i < noticeElements.length; i++) {
     if (inactive) {
       noticeElements[i].setAttribute('disabled', 'disabled');
+    } else {
+      noticeElements[i].removeAttribute('disabled', 'disabled');
     }
-    noticeElements[i].removeAttribute('disabled', 'disabled');
   }
 };
 disabledNotice(true);
@@ -58,7 +59,6 @@ var createElement = function () {
     description: '',
     photos: PHOTOS.sort(compareRandom)
   };
-
   return {author: author, location: location, offer: offer};
 };
 
@@ -151,20 +151,53 @@ setAttributes(titleInput, {'required': 'required', 'minlength': 30, 'maxlength':
 setAttributes(priceInput, {'required': 'required', 'max': 1000000});
 
 var settingMinPrice = function (event) {
+  var oldSelected = typeSelect.options.selectedIndex;
+  typeSelect.options[oldSelected].removeAttribute('selected');
   if (event.target.value === 'bungalo') {
     setAttributes(priceInput, {'min': 0, 'placeholder': 0});
+    event.target.options[0].setAttribute('selected', 'selected');
   } else if (event.target.value === 'flat') {
     setAttributes(priceInput, {'min': 1000, 'placeholder': 1000});
+    event.target.options[1].setAttribute('selected', 'selected');
   } else if (event.target.value === 'house') {
     setAttributes(priceInput, {'min': 5000, 'placeholder': 5000});
+    event.target.options[2].setAttribute('selected', 'selected');
   } else if (event.target.value === 'palace') {
     setAttributes(priceInput, {'min': 10000, 'placeholder': 10000});
+    event.target.options[3].setAttribute('selected', 'selected');
   }
 };
-
 var typeSelect = document.querySelector('#type');
 typeSelect.setAttribute('required', 'required');
 typeSelect.addEventListener('change', settingMinPrice);
+
+priceInput.addEventListener('input', function () {
+  var selectedNow = typeSelect.options.selectedIndex;
+  if (typeSelect.options[selectedNow].value === 'bungalo') {
+    priceInput.setCustomValidity('');
+  }
+  if (typeSelect.options[selectedNow].value === 'flat') {
+    if (event.target.value < 1000) {
+      priceInput.setCustomValidity('Для Квартиры минимальная стоимость 1000');
+    } else {
+      priceInput.setCustomValidity('');
+    }
+  }
+  if (typeSelect.options[selectedNow].value === 'house') {
+    if (event.target.value < 5000) {
+      priceInput.setCustomValidity('Для Дома минимальная стоимость 5000');
+    } else {
+      priceInput.setCustomValidity('');
+    }
+  }
+  if (typeSelect.options[selectedNow].value === 'palace') {
+    if (event.target.value < 10000) {
+      priceInput.setCustomValidity('Для Дома минимальная стоимость 5000');
+    } else {
+      priceInput.setCustomValidity('');
+    }
+  }
+});
 
 var settingSelected = function (firstSelect, secondSelect) {
   var firstIndex = firstSelect.options.selectedIndex;
